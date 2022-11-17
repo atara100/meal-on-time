@@ -5,15 +5,12 @@ interface Props{
     description:string;
     price:number;
     rating:number;
+    categoryClick:Function;
 }
 
-function Card({imageUrl,category,name,description,price,rating}:Props) {
+function Card({imageUrl,category,name,description,price,rating,categoryClick}:Props) {
   function alertName(name:string){
     alert(`selected dish: ${name}`);
-  }
-
-    function alertCategory(category:string){
-    alert(`category is: ${category}`);
   }
 
 
@@ -22,7 +19,7 @@ function Card({imageUrl,category,name,description,price,rating}:Props) {
 
         <div className="card m-4"  >
           <img src={imageUrl} className="card-img-top" alt={name}/>
-          <div onClick={(e)=>alertCategory(category)} className="badge bg-info text-dark ">{category}</div>
+          <div onClick={()=>categoryClick(category)} className="badge bg-info text-dark ">{category}</div>
           <div className="card-body">
             <h5 className="card-title"> <a href="#">{name}</a></h5>
             <p className="card-text">{description}</p>

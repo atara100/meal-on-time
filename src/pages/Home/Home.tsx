@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import ButtonsBar from "../../components/ButtonsBar";
 import Card from "../../components/Card";
 import Title from "../../components/Title";
+import { data } from "./data";
 import './Home.css'
 
 interface CardType{
@@ -13,7 +15,7 @@ interface CardType{
   rating:number;
 }
 
-enum Categories{
+export enum Categories{
   all='All',
   vegeterian='Vegeterian',
   chicken='Chicken',
@@ -21,41 +23,13 @@ enum Categories{
 }
 
 function Home() {
-    const data=[
-        {
-         id:1,
-         imageUrl:'https://cdn.pixabay.com/photo/2016/08/09/10/30/tomatoes-1580273__340.jpg',
-         category:'Vegeterian',
-         name:'GreekSalad',
-         description:'great salad',
-         price:60,
-         rating:2  
-        },
-        {
-         id:2,
-         imageUrl:'https://cdn.pixabay.com/photo/2017/02/25/15/23/pad-thai-2098017__340.jpg',
-         category:'Asian',
-         name:'Pad Thai',
-         description:'yumi yumi ',
-         price:85,
-         rating:4
-        },
-        {
-        id:3,
-        imageUrl:'https://cdn.pixabay.com/photo/2014/01/16/01/48/chicken-nuggets-246180__340.jpg' ,
-        category:'Chicken',
-        name:'Fried Chicken',
-        description:'i like it',
-        price:103,
-        rating:5
-        }
-
-    ];
-    const categories= Object.values(Categories);
+  
        
+    //states:
     const [display,setDisplay]=useState('grid');
     const [selectedCategory,setSelectedCategory]=useState(Categories.all);
-    const[filtered,setFiltered]=useState([...data])
+    const[filtered,setFiltered]=useState([...data]);
+    const [search,setSearch]=useState('');
     
     function filterByCategory(category:Categories,cards:Array<CardType>):Array<CardType>{
       if(category===Categories.all){
@@ -67,61 +41,71 @@ function Home() {
 
     function handleCategoryChange(e:React.ChangeEvent<HTMLSelectElement>){
        const value=e.target.value as Categories;
+       categoryChange(value);
+    }
+    function categoryChange(value:Categories){
        const filteredData=filterByCategory(value,[...data]);
-      
+
        setSelectedCategory(value);
-       setFiltered(filteredData);
-       
+        setSearch('');
+       setFiltered(filteredData);     
     }
 
-    // function handleDisplay(display:string){
-    //    setDisplay(display)
-    // }
+    function handleSearch(e:React.ChangeEvent<HTMLInputElement>){
+      //get value
+      const value=e.target.value;
+      let result=[...data]
+      if(value ){
+        //filter cards
+        const stripVal=value.trim().toLowerCase()
+        result=[...data].filter(card=>card.name.toLowerCase().includes(stripVal))
+      
+      }
+      //update state
+      setSelectedCategory(Categories.all)
+       setSearch(value);
+       setFiltered(result);
+    }
 
-    return ( 
+
+return ( 
         <>
 
-        <Title
-        titleContent='Order Delivery or Takeaway'
-        />
-        
-<div>
+  <Title
+   titleContent='Order Delivery or Takeaway'
+  />
+  <ButtonsBar
+  updateDisplay={setDisplay}
+  selectedCategory={selectedCategory}
+  handleCategoryChange={handleCategoryChange}
+  search={search}
+  handleSearch={handleSearch}
+  />
 
-  <button onClick={()=>setDisplay('grid')} className="btn btn-light mx-l"><i className="bi bi-grid-3x3-gap"></i></button>
-  <button onClick={()=>setDisplay('list')} className="btn btn-light"><i className="bi bi-list-ul"></i></button>
- 
-
-  <div>
-
-  <label htmlFor="categories" >Category:</label>
-  <select value={selectedCategory} onChange={handleCategoryChange} className="form-select" name="categories" id="categories">
-   {
-      categories.map(category=>
-      <option key={category} value={category}>{category}</option>
-      )
-   }
-  </select>
-    
-  </div>
-
-</div>
-
-        <div className={`${display} p-5`}>
-
+{
+  filtered.length === 0 ?
+  (<p>No dishes to display 😕</p>)
+  :
+  (
+    <div className={`${display} p-5`}>
          {
            filtered.map((card)=>
-           
              <Card 
                key={card.id}
                {...card}
+               categoryClick={categoryChange}
              />
             )
         }
+    </div>
+  )
+  
+}
 
-        </div>
-
-        </>)
-       }
+ </>
+)
+      
+}
 
 
 export default Home;

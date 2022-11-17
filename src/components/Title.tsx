@@ -4,7 +4,7 @@ interface Props{
 
 function Title({titleContent}:Props) {
     return ( 
-        <h2 className="text-center">{titleContent}</h2>
+        <h2 className="text-center mt-4">{titleContent}</h2>
      );
 }
 
